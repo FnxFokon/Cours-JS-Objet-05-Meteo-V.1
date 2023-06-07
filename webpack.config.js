@@ -36,7 +36,7 @@ module.exports = {
   plugins: [
     // permet de générer un fichier HTML à partir d'un template
     new HtmlWebpackPlugin({
-      title: 'Javascript Objet avec Webpack',
+      title: 'Météo V 1.0.0',
     })
   ],
   module: {

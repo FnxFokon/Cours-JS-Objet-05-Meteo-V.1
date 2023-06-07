@@ -1,4 +1,4 @@
-name: meteora-numb-webpack
+name: meteora-numb-meteo-v1
 services:
   node:
     type: node:16
