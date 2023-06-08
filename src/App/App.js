@@ -7,8 +7,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 // Importer les icones de bootstrap
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
+// Import du fichier style.css
+import '../assets/style.css';
+
 import WeatherService from './Services/WeatherService';
 import CurrentWeather from './Class/CurrentWeather';
+import MainWeather from './Class/MainWeather';
 
 const apiKey = '8cd839c5fdafc91d2adc41462816ab09'; // apiKey du prof: 2dcb29d2362cd223eeb37cb8d032961d
 
@@ -161,8 +165,8 @@ class App {
             this.elResultDiv.append(this.getErrorDom(serviceResponse.error));
         }
         // Si la reponse est "ok" on affiche la météo
-        const currentWeather = new CurrentWeather(serviceResponse.data);
-        this.elResultDiv.append(currentWeather.getDOM());
+        const currentWeather = new MainWeather(serviceResponse.data);
+        this.elResultDiv.append(currentWeather.getDom());
 
     }
 
