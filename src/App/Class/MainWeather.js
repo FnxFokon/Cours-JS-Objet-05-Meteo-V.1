@@ -9,9 +9,7 @@ const iconCDN = 'https://openweathermap.org/img/wn/';
 class MainWeather {
     // On déclare nos propriétés
     clouds;
-    country;
     dt;
-    locationName;
     main;
     rain;
     snow;
@@ -25,11 +23,7 @@ class MainWeather {
 
         this.clouds = mainWeatherLiteral.clouds.all;
 
-        this.country = mainWeatherLiteral.sys.country;
-
         this.dt = mainWeatherLiteral.dt;
-
-        this.locationName = mainWeatherLiteral.name;
 
         this.main = new Main(mainWeatherLiteral.main);
 
@@ -40,7 +34,7 @@ class MainWeather {
 
         // Si j'ai des données de neige je les récupère
         if (mainWeatherLiteral.hasOwnProperty('snow')) {
-            this.rain = mainWeatherLiteral.snow['1h'];
+            this.snow = mainWeatherLiteral.snow['1h'];
         }
 
         // On crée l'instance de Sun en lui passant un objet avec les données de sun
@@ -60,6 +54,8 @@ class MainWeather {
         this.weather = new Weather({
             description: mainWeatherLiteral.weather[0].description,
             icon: mainWeatherLiteral.weather[0].icon,
+            locationName: mainWeatherLiteral.name,
+            country: mainWeatherLiteral.sys.country,
         });
 
         this.wind = new Wind(mainWeatherLiteral.wind);
@@ -75,7 +71,7 @@ class MainWeather {
         tab1.setAttribute('role', 'tabpanel');
         tab1.setAttribute('aria-labelledby', 'tab1-tab');
         tab1.innerHTML = `
-            <h5 class="card-title">Informations générales</h5>
+            <h3 class="card-title">Informations générales</h3>
         `;
         tab1.append(this.weather.getDom());
 
@@ -85,7 +81,7 @@ class MainWeather {
         tab2.setAttribute('role', 'tabpanel');
         tab2.setAttribute('aria-labelledby', 'tab2-tab');
         tab2.innerHTML = `
-            <h5 class="card-title">Température</h5>
+            <h3 class="card-title">Température</h3>
         `;
         tab2.append(this.main.getDom());
 
@@ -95,7 +91,7 @@ class MainWeather {
         tab3.setAttribute('role', 'tabpanel');
         tab3.setAttribute('aria-labelledby', 'tab3-tab');
         tab3.innerHTML = `
-            <h5 class="card-title">Info sur le vent</h5>
+            <h3 class="card-title">Info sur le vent</h3>
         `;
         tab3.append(this.wind.getDom());
 
@@ -105,12 +101,57 @@ class MainWeather {
         tab4.setAttribute('role', 'tabpanel');
         tab4.setAttribute('aria-labelledby', 'tab4-tab');
         tab4.innerHTML = `
-            <h5 class="card-title">Info sur le soleil</h5>
+            <h3 class="card-title">Info sur le soleil</h3>
         `;
         tab4.append(this.sun.getDom())
 
+        const tab5 = document.createElement('div');
+        tab5.className = "tab-pane fade";
+        tab5.id = "tab5";
+        tab5.setAttribute('role', 'tabpanel');
+        tab5.setAttribute('aria-labelledby', 'tab5-tab');
+        tab5.innerHTML = `
+                <h5 class="card-title">Précipitations</h5>
+            `;
+        // if (this.rain) {
+        //     const rain = document.createElement('div');
+        //     rain.innerHTML = `
+        //             <div class="d-flex align-items-center">
+        //                 <i class="bi bi-cloud-drizzle mx-2"></i>
+        //                 <span>Cumul de pluie: ${this.rain} mm</span>
+        //             </div>
+        //         `;
+        //     tab5.append(rain);
+        // }
+        // if (this.snow) {
+        //     const snow = document.createElement('div');
+        //     snow.innerHTML = `
+        //             <div class="d-flex align-items-center">
+        //                 <i class="bi bi-snow2 mx-2"></i>
+        //                 <span>Cumul de neige: ${this.snow} mm</span>
+        //             </div>
+        //         `;
+        //     tab5.append(snow);
+        // }
+
+        // Version améliorer
+        this.rain ?
+            tab5.innerHTML += `
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-cloud-drizzle mx-2"></i>
+                        <span>Cumul de pluie: ${this.rain} mm</span>
+                    </div>
+                `
+            :
+            tab5.innerHTML += `
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-snow2 mx-2"></i>
+                        <span>Cumul de neige: ${this.snow} mm</span>
+                    </div>
+                `;
+
         const tabList = document.createElement('ul');
-        tabList.className = "nav nav-tabs card-header-tabs";
+        tabList.className = "nav nav-tabs card-header-tabs ms-0";
         tabList.id = "myTabs";
         tabList.setAttribute('role', 'tablist');
         tabList.innerHTML = `
@@ -128,6 +169,27 @@ class MainWeather {
         </li>
         `;
 
+
+        if (this.rain || this.snow) {
+            const precipitations = document.createElement('li');
+            precipitations.className = "nav-item";
+            precipitations.setAttribute('role', 'presentation');
+            precipitations.innerHTML = `
+            <a class="nav-link" id="tab5-tab" data-bs-toggle="tab" href="#tab5" role="tab" aria-controls="tab5" aria-selected="false">Précipitations</a>
+            `;
+            tabList.append(precipitations);
+        };
+
+        // Technique de la concaténation au lieu d'utiliser une constante
+        // if(this.rain || this.snow){
+        //     tabList.innerHTML += `
+        //         </li>
+        //             <li class="nav-item" role="presentation">
+        //             <a class="nav-link" id="tab5-tab" data-bs-toggle="tab" href="#tab5" role="tab" aria-controls="tab5"                      aria-selected="false">Précipitations</a>
+        //         </li>
+        //     `;
+        // }
+
         // Créer l'élément pour le contenu de la carte
         const cardBody = document.createElement('div');
         cardBody.className = "card-body";
@@ -137,6 +199,7 @@ class MainWeather {
                 ${tab2.outerHTML}
                 ${tab3.outerHTML}
                 ${tab4.outerHTML}
+                ${tab5.outerHTML}
             </div>
         `;
 
@@ -152,6 +215,7 @@ class MainWeather {
 
         resultDiv.innerHTML = '';
         resultDiv.appendChild(cardContainer);
+        return cardContainer;
     }
 }
 
